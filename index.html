@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lempinio akordai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Barlow:wght@400;500;600&family=Chivo+Mono:wght@500;600&display=swap">
+<style>
+html,body{margin:0}
+/* Layout: Lempinio stiprintuvo kalba. Viršuje šaknis ir tipas, po jais akordo vardas su formule ir grifo „ekranas“,
+   tada grojimo mygtukai, vaizdų skirtukai ir pirštuočių kortelės su diagramomis. Rankenėlės apačioje. */
+:root{
+  --bg:#dfe2dc;
+  --panel:#eef0eb;
+  --ink:#1b1e1a;
+  --muted:#636a60;
+  --line:#c3c8be;
+  --accent:#cf6a17;
+  --accent-ink:#ffffff;
+  --knob:#262925;
+  --knob-hi:#3d413b;
+  --screen:#171b19;
+  --screen-line:#4c5852;
+  --screen-ink:#e6ebe4;
+  --screen-dim:#7e8a83;
+  --wood:#2a2420;
+  --fret:#a9b0a8;
+  --grille-a:#cfd3cb;
+  --grille-b:#c4c9c0;
+  --font-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --font-body:"Barlow","Segoe UI",Roboto,system-ui,sans-serif;
+  --font-mono:"Chivo Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131513;--panel:#1c1f1c;--ink:#e4e7e0;--muted:#959c91;--line:#30352f;
+  --accent:#ee8b33;--accent-ink:#1a0f05;--knob:#0c0e0c;--knob-hi:#2a2e29;
+  --screen:#0c0f0d;--screen-line:#3f4a44;--screen-ink:#e6ebe4;--screen-dim:#6f7b74;--wood:#1d1915;--fret:#8d958c;
+  --grille-a:#1a1d1a;--grille-b:#222622;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131513;--panel:#1c1f1c;--ink:#e4e7e0;--muted:#959c91;--line:#30352f;
+  --accent:#ee8b33;--accent-ink:#1a0f05;--knob:#0c0e0c;--knob-hi:#2a2e29;
+  --screen:#0c0f0d;--screen-line:#3f4a44;--screen-ink:#e6ebe4;--screen-dim:#6f7b74;--wood:#1d1915;--fret:#8d958c;
+  --grille-a:#1a1d1a;--grille-b:#222622;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.top{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;
+  padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+  background:repeating-linear-gradient(90deg,var(--grille-a) 0 3px,var(--grille-b) 3px 5px)}
+.brand{display:flex;align-items:center;gap:10px}
+.pilot{width:14px;height:14px;border-radius:50%;background:var(--accent);opacity:.35;flex:none;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--ink) 25%,transparent);transition:opacity .08s linear}
+h1{font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:.06em;text-transform:uppercase;margin:0;line-height:1}
+.brand small{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.04em;display:block;margin-top:2px}
+.engine{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.04em;text-align:right}
+.engine b{color:var(--ink);font-weight:600}
+
+.label{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+.lab{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* šaknis ir tipas */
+.picker{display:flex;flex-direction:column;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.roots{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:5px}
+.roots button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 0 5px;display:flex;flex-direction:column;align-items:center;min-width:0}
+.roots b{font-family:var(--font-display);font-weight:800;font-size:24px;line-height:1;letter-spacing:.02em}
+.roots span{font-family:var(--font-mono);font-size:9px;color:var(--muted);min-height:12px}
+.roots button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.roots button[aria-pressed="true"] span{color:color-mix(in srgb,var(--bg) 70%,transparent)}
+@media (max-width:640px){.roots{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.fams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px 18px}
+.fam{display:flex;flex-direction:column;gap:5px;min-width:0;border-top:1px solid var(--line);padding-top:7px}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips button{border:1px solid var(--line);background:transparent;border-radius:6px;padding:4px 9px;font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+.chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* scena */
+.ident{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:flex-end;justify-content:space-between}
+.cname{font-family:var(--font-display);font-weight:800;font-size:clamp(46px,9vw,76px);line-height:.9;letter-spacing:.01em;margin:0}
+.cdesc{font-size:14px;color:var(--muted);margin-top:4px}
+.formula{display:flex;flex-wrap:wrap;gap:6px}
+.formula span{display:flex;flex-direction:column;align-items:center;min-width:42px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:4px 8px}
+.formula b{font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1.05}
+.formula i{font-style:normal;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.formula span.r{border-color:var(--accent)}
+.formula span.r i{color:var(--accent)}
+.formula span.off{opacity:.45}
+
+.screen{position:relative;background:var(--screen);border-radius:10px;overflow:hidden;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--screen-ink) 8%,transparent)}
+#board{display:block;width:100%;height:220px;touch-action:none;cursor:pointer}
+#scope{display:block;width:100%;height:40px;border-top:1px solid color-mix(in srgb,var(--screen-ink) 10%,transparent)}
+.under{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;padding:8px 2px 0}
+.readout{font-family:var(--font-mono);font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;min-width:0}
+.readout em{font-style:normal;color:var(--muted)}
+.hint{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+
+.strum{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
+  padding:10px 14px;border-radius:8px;font-weight:600;font-size:14px;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn .k{font-family:var(--font-mono);font-size:11px;opacity:.65;font-weight:500}
+.spacer{flex:1 1 auto}
+.switch{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px 4px 4px;font-size:13px;font-weight:600}
+.switch i{width:30px;height:18px;border-radius:9px;background:var(--line);position:relative;transition:background .15s}
+.switch i::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.switch[aria-pressed="true"] i{background:var(--accent)}
+.switch[aria-pressed="true"] i::after{transform:translateX(12px)}
+
+/* vaizdai */
+.views{display:flex;gap:0;border-bottom:2px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+.views::-webkit-scrollbar{display:none}
+.views button{border:0;background:transparent;padding:10px 14px 8px;font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-radius:8px 8px 0 0}
+.views button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+@media (max-width:700px){
+  .views{flex-wrap:wrap;gap:5px;border-bottom:0;overflow:visible}
+  .views button{border:1px solid var(--line);border-radius:8px;font-size:17px;padding:8px 11px 6px;flex:1 1 auto}
+  .views button[aria-selected="true"]{border-color:var(--ink)}
+}
+.vnote{font-size:13px;color:var(--muted);margin:0;max-width:72ch}
+.groups{display:flex;flex-direction:column;gap:18px}
+.group{display:flex;flex-direction:column;gap:8px}
+.ghead{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.ghead h3{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;margin:0;line-height:1}
+.ghead small{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.vc{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 6px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center}
+.vc svg{width:100%;max-width:100px;height:auto;display:block}
+.vc .vt{font-family:var(--font-display);font-weight:800;font-size:18px;line-height:1.05;letter-spacing:.02em;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vc .vs{font-size:11px;color:var(--muted);line-height:1.2}
+.vc .tab{font-family:var(--font-mono);font-size:11px;color:var(--ink);letter-spacing:.04em}
+.vc[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.vc.hit{box-shadow:0 0 0 2px var(--accent)}
+.empty{font-size:13px;color:var(--muted);margin:0}
+
+/* diagrama */
+.dg-str{stroke:var(--muted);stroke-width:1}
+.dg-fret{stroke:var(--line);stroke-width:1.2}
+.dg-nut{stroke:var(--ink);stroke-width:4}
+.dg-txt{fill:var(--muted);font-family:var(--font-mono);font-size:9px}
+.dg-x{fill:var(--muted);font-family:var(--font-mono);font-size:10px}
+.dg-o{fill:none;stroke:var(--ink);stroke-width:1.3}
+.dg-o.r{stroke:var(--accent)}
+.dg-dot{fill:var(--ink)}
+.dg-dot.r{fill:var(--accent)}
+.dg-lb{fill:var(--bg);font-family:var(--font-mono);font-size:7px;font-weight:600}
+.dg-lb.r{fill:var(--accent-ink)}
+.dg-bar{fill:var(--ink);opacity:.85}
+
+/* rankenėlės */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card-head small{font-size:12px;color:var(--muted)}
+.knobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px 6px}
+.knob{display:flex;flex-direction:column;align-items:center;gap:4px;user-select:none;-webkit-user-select:none;touch-action:none;border-radius:8px;padding:4px 0;min-width:0;outline-offset:0}
+.knob .dial{width:52px;height:52px;border-radius:50%;position:relative;
+  background:radial-gradient(circle at 35% 30%,var(--knob-hi),var(--knob) 65%);
+  box-shadow:0 2px 0 color-mix(in srgb,var(--ink) 18%,transparent),0 0 0 3px var(--panel),0 0 0 4px var(--line);cursor:ns-resize}
+.knob .dial::before{content:"";position:absolute;left:50%;top:5px;width:3px;height:14px;margin-left:-1.5px;border-radius:2px;background:#f4efe6;
+  transform-origin:50% 21px;transform:rotate(var(--rot,0deg))}
+.knob svg{position:absolute;inset:-8px;width:68px;height:68px;pointer-events:none;overflow:visible}
+.knob svg .trk{fill:none;stroke:var(--line);stroke-width:2.5;stroke-linecap:round}
+.knob svg .val{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
+.knob .name{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:4px}
+.knob .v{font-family:var(--font-mono);font-size:11px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;min-height:14px}
+
+.help{font-size:13px;color:var(--muted);margin:0;max-width:72ch}
+.help b{color:var(--ink);font-weight:600}
+.keys{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+@media (max-width:520px){
+  .knob .dial{width:46px;height:46px}.knob .dial::before{height:12px;transform-origin:50% 18px}
+  .knob svg{width:62px;height:62px}
+  .btn{padding:9px 11px}
+  #board{height:200px}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){.pilot,.switch i,.switch i::after{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="pilot" id="pilot" aria-hidden="true"></span>
+      <div><h1>Akordai</h1><small>Lempinio stygos · akustinė gitara · be įrašų</small></div>
+    </div>
+    <div class="engine" id="engine">Garsas įsijungs po pirmo paspaudimo</div>
+  </header>
+
+  <section class="picker" aria-label="Akordo pasirinkimas">
+    <span class="lab">Root</span>
+    <div class="roots" id="roots" role="group" aria-label="Root"></div>
+    <div class="fams" id="fams"></div>
+  </section>
+
+  <section aria-label="Akordas">
+    <div class="ident">
+      <div><p class="cname" id="cname">Am</p><div class="cdesc" id="cdesc"></div></div>
+      <div class="formula" id="formula" aria-label="Akordo natos"></div>
+    </div>
+  </section>
+
+  <div>
+    <div class="screen">
+      <canvas id="board" aria-label="Grifas. Bakstelėk laukelį, kad užgautum natą, arba brauk per stygas dešinėje, kad suskambintum akordą."></canvas>
+      <canvas id="scope" aria-hidden="true"></canvas>
+    </div>
+    <div class="under">
+      <div class="readout" id="readout" aria-live="polite"></div>
+      <span class="hint">← → kitas variantas · tarpas ↓ · U ↑ · P pirštais · Esc tyla</span>
+    </div>
+  </div>
+
+  <div class="strum">
+    <button class="btn primary" id="down">↓ Žemyn <span class="k">tarpas</span></button>
+    <button class="btn" id="up">↑ Aukštyn <span class="k">U</span></button>
+    <button class="btn" id="arp">Pirštais <span class="k">P</span></button>
+    <button class="btn" id="slow">Po vieną natą</button>
+    <button class="btn" id="all" aria-pressed="false">Groti visus variantus</button>
+    <span class="spacer"></span>
+    <button class="btn" id="prev" aria-label="Ankstesnis variantas">←</button>
+    <button class="btn" id="next" aria-label="Kitas variantas">→</button>
+    <button class="switch" id="ghost" aria-pressed="true"><i></i>Visos natos grife</button>
+    <button class="btn" id="mute">Užslopinti <span class="k">Esc</span></button>
+  </div>
+
+  <div class="views" id="views" role="tablist" aria-label="Variantų rūšis"></div>
+  <p class="vnote" id="vnote"></p>
+  <div class="groups" id="groups"></div>
+
+  <section class="card" aria-label="Ranka ir garsas">
+    <div class="card-head"><span class="label">Ranka ir garsas</span><small>tempk rankenėlę aukštyn ar žemyn, dukart spausk – numatyta</small></div>
+    <div class="knobs" id="knobs"></div>
+  </section>
+
+  <section class="card" aria-label="Kaip skaityti">
+    <span class="label">Kaip skaityti</span>
+    <p class="help"><b>Diagramos</b> rodo grifą iš priekio: kairėje žemoji E styga, viršuje viršutinis balnelis arba laukelio numeris. Taške parašytas intervalas nuo root, oranžinis taškas yra root (R). <b>×</b> stygos neskambinamos, <b>○</b> skamba atviros. Juosta per kelias stygas reiškia barė.</p>
+    <p class="help"><b>Tabulatūra</b> po diagrama skaitoma nuo žemosios E iki aukštosios e. Kai yra dviženklių laukelių, skaičiai atskirti tašku.</p>
+    <span class="keys">Klaviatūra: ← → keičia variantą ir suskambina · tarpas žemyn · U aukštyn · P pirštais · Esc užslopina</span>
+  </section>
+</div>
+
+<script id="dsp">
+/* Stygos — physically modelled guitar, no samples.
+   Each string = two coupled digital waveguide loops (vertical + horizontal polarisation)
+   with frequency-dependent loss, stiffness dispersion and an exact fractional-delay tuner.
+   Excitation = the string's real initial shape (triangle with its apex at the pick point),
+   smoothed by pick hardness. Output = magnetic pickup model (electric) or bridge -> modal
+   body (acoustic / nylon). This file runs unchanged in an AudioWorklet and in Node tests. */
+
+const STY_TWO_PI = Math.PI * 2;
+const STY_SCALE_MM = 648;            // 25.5" scale length
+const STY_OPEN = [40, 45, 50, 55, 59, 64]; // E2 A2 D3 G3 B3 E4, index 0 = low E
+
+const STY_INSTR = {
+  electric: {
+    t60: [9.5, 9, 8, 7, 6, 5.5], hi: [1.6, 1.7, 1.8, 1.9, 2.0, 2.1], hiF: 4000,
+    B: [1.8e-5, 2.2e-5, 2.8e-5, 6e-5, 8e-5, 1.1e-4],
+    vert: 0.85, hor: 1.15, detune: 0.5, couple: 0.00025, mixV: 1, mixH: 0.45,
+    out: "pickup", gain: 1.6, pick: 1
+  },
+  acoustic: {
+    t60: [7, 6.5, 6, 5.2, 4.4, 3.8], hi: [0.9, 0.95, 1.0, 1.05, 1.1, 1.2], hiF: 4000,
+    B: [1.8e-5, 2.2e-5, 2.8e-5, 6e-5, 8e-5, 1.1e-4],
+    vert: 0.55, hor: 1.1, detune: 0.8, couple: 0.0006, mixV: 1, mixH: 0.35,
+    out: "body", gain: 4.4, pick: 1, body: 1
+  },
+  nylon: {
+    t60: [5.5, 5, 4.6, 4, 3.5, 3.1], hi: [0.22, 0.24, 0.26, 0.3, 0.32, 0.35], hiF: 3000,
+    B: [8e-6, 9e-6, 1.1e-5, 2e-5, 2.4e-5, 3e-5],
+    vert: 0.55, hor: 1.1, detune: 0.8, couple: 0.0006, mixV: 1, mixH: 0.35,
+    out: "body", gain: 5.6, pick: 0.35, body: 0.97
+  }
+};
+
+// steel-string body modes: [Hz, T60 s, gain]
+const STY_BODY = [
+  [98, 0.16, 0.6], [192, 0.2, 0.75], [226, 0.16, 0.5], [287, 0.14, 0.4], [372, 0.12, 0.45],
+  [441, 0.1, 0.35], [523, 0.09, 0.32], [612, 0.08, 0.28], [718, 0.07, 0.27], [862, 0.06, 0.24],
+  [1003, 0.05, 0.22], [1186, 0.045, 0.2], [1398, 0.04, 0.18], [1651, 0.035, 0.16], [1947, 0.03, 0.14],
+  [2296, 0.025, 0.12], [2712, 0.02, 0.11], [3204, 0.018, 0.09], [3790, 0.015, 0.08], [4480, 0.012, 0.07]
+];
+
+function styRng(seed) {
+  let s = (seed >>> 0) || 0x9e3779b9;
+  return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+}
+function styClamp(x, a, b) { return x < a ? a : x > b ? b : x; }
+
+// phase delay (samples) of first-order allpass (b + z^-1)/(1 + b z^-1) at w
+function styApDelay(b, w) {
+  const a1 = Math.atan2(-Math.sin(w), b + Math.cos(w));
+  const a2 = Math.atan2(-b * Math.sin(w), 1 + b * Math.cos(w));
+  return -(a1 - a2) / w;
+}
+// phase delay of one-pole lowpass c/(1 - a z^-1)
+function styLpDelay(a, w) { return Math.atan2(a * Math.sin(w), 1 - a * Math.cos(w)) / w; }
+function styLpMagNorm(a, w) { return (1 - a) / Math.sqrt(1 - 2 * a * Math.cos(w) + a * a); }
+
+class StyLoop {
+  constructor() {
+    this.L = 8192; this.buf = new Float32Array(this.L); this.w = 0;
+    this.N = 100; this.c = 0; this.a = 0; this.g = 0.99; this.gT = 0.99; this.aT = 0; this.lp = 0;
+    this.b = 0; this.M = 3; this.ax = new Float64Array(3); this.ay = new Float64Array(3);
+    this.eta = 0; this.tx = 0; this.ty = 0;
+    this.exc = new Float32Array(8192);
+    this.out = 0;
+  }
+  // design loss filter + dispersion + tuner for frequency f (Hz), T60 at f and at hiF
+  tune(sr, f, t60, t60hi, hiF, B) {
+    const P = sr / f, w0 = STY_TWO_PI * f / sr;
+    const G0 = Math.pow(10, -3 / (t60 * f));
+    let a = 0;
+    const wh = STY_TWO_PI * Math.min(hiF, 0.45 * sr) / sr;
+    if (t60hi < t60 && wh > w0 * 1.5) {
+      const GH = Math.pow(10, -3 / (t60hi * f));
+      const r = GH / G0, c = Math.cos(wh), r2 = r * r;
+      const A = 1 - r2, Bq = 1 - r2 * c;
+      a = (Bq - Math.sqrt(Math.max(0, Bq * Bq - A * A))) / A;
+      a = styClamp(a, 0, 0.95);
+    }
+    const g = Math.min(0.99999, G0 / styLpMagNorm(a, w0));
+    // dispersion: solve allpass coefficient so partial K lands at k f0 sqrt(1 + B k^2)
+    const M = this.M;
+    let b = 0;
+    if (B > 0) {
+      const K = styClamp(Math.round(3000 / f), 2, 16);
+      const stretch = Math.sqrt(1 + B * K * K);
+      const wK = w0 * K * stretch;
+      if (wK < 0.9 * Math.PI) {
+        const need = P * (1 - 1 / stretch);
+        let lo = -0.9, hi = 0;
+        for (let i = 0; i < 40; i++) {
+          const m = 0.5 * (lo + hi);
+          const got = M * (styApDelay(m, w0) - styApDelay(m, wK));
+          if (got > need) lo = m; else hi = m;
+        }
+        b = 0.5 * (lo + hi);
+      }
+    }
+    // keep room for the integer delay
+    while (b < 0 && M * styApDelay(b, w0) > P * 0.35) b *= 0.8;
+    const R = P - styLpDelay(a, w0) - M * styApDelay(b, w0);
+    let N = Math.floor(R) - 1; if (N < 2) N = 2;
+    let d = R - N, eta = (1 - d) / (1 + d);
+    for (let i = 0; i < 4; i++) {         // refine Thiran so its phase delay at w0 is exact
+      const got = styApDelay(eta, w0);
+      d += (R - N) - got;
+      eta = (1 - d) / (1 + d);
+    }
+    this.N = N; this.aT = a; this.gT = g; this.b = b; this.eta = styClamp(eta, -0.95, 0.95);
+  }
+  snap() { this.a = this.aT; this.g = this.gT; }
+  // shape the excitation (displacement) and start injecting it
+  pluck(beta, amp, smooth, noise, rnd) {
+    const N = this.N, e = this.exc;
+    const k = Math.max(1, Math.min(N - 1, Math.round(beta * N)));
+    // shape starts and ends at 0 (string at rest at the bridge) -> no onset step
+    for (let i = 0; i < N; i++) {
+      const v = i < k ? i / k : (N - i) / (N - k);
+      e[i] = v + noise * (rnd() * 2 - 1) * v;
+    }
+    // circular moving average, twice (triangular kernel) = pick / finger width
+    const W = Math.max(1, Math.min(Math.floor(N / 3), Math.round(smooth)));
+    if (W > 1) {
+      const tmp = new Float32Array(N);
+      for (let pass = 0; pass < 2; pass++) {
+        let acc = 0;
+        for (let i = 0; i < W; i++) acc += e[i % N];
+        for (let i = 0; i < N; i++) { tmp[(i + (W >> 1)) % N] = acc / W; acc += e[(i + W) % N] - e[i]; }
+        for (let i = 0; i < N; i++) e[i] = tmp[i];
+      }
+    }
+    // zero-mean (a fixed string has no DC mode) and rotated to start on an upward zero crossing:
+    // the loop starts continuous, filter states stay consistent, nothing circulates as a click
+    let mean = 0; for (let i = 0; i < N; i++) mean += e[i]; mean /= N;
+    for (let i = 0; i < N; i++) e[i] -= mean;
+    let z0 = 0; for (let i = 1; i < N; i++) if (e[i - 1] < 0 && e[i] >= 0) { z0 = i; break; }
+    if (z0) { const t2 = new Float32Array(N); for (let i = 0; i < N; i++) t2[i] = e[(i + z0) % N]; for (let i = 0; i < N; i++) e[i] = t2[i]; }
+    let pk = 0; for (let i = 0; i < N; i++) pk = Math.max(pk, Math.abs(e[i]));
+    const s = amp / (pk || 1);
+    for (let i = 0; i < N; i++) e[i] *= s;
+    // the pick stops most of the old vibration (uniformly, so no seam circulates), new shape goes
+    // straight into the part of the line that is read next (zero latency)
+    const L = this.L, buf = this.buf;
+    for (let i = 0; i < L; i++) buf[i] *= 0.06;
+    let r = this.w - N; if (r < 0) r += L;
+    for (let i = 0; i < N; i++) { buf[r] += e[i]; if (++r >= L) r = 0; }
+    this.lp *= 0.06; for (let i = 0; i < 3; i++) { this.ax[i] *= 0.06; this.ay[i] *= 0.06; } this.tx *= 0.06; this.ty *= 0.06;
+  }
+  // one sample; inp = external force (bridge coupling)
+  tick(inp) {
+    const L = this.L, buf = this.buf;
+    this.g += (this.gT - this.g) * 0.003;
+    this.a += (this.aT - this.a) * 0.003;
+    let r = this.w - this.N; if (r < 0) r += L;
+    let y = buf[r];
+    this.out = y;
+    const a = this.a;
+    let v = this.lp = this.g * (1 - a) * y + a * this.lp;
+    const b = this.b, ax = this.ax, ay = this.ay;
+    for (let i = 0; i < 3; i++) { const o = b * v + ax[i] - b * ay[i]; ax[i] = v; ay[i] = o; v = o; }
+    const e = this.eta, o = e * v + this.tx - e * this.ty; this.tx = v; this.ty = o; v = o;
+    buf[this.w] = v + inp;
+    if (++this.w >= L) this.w = 0;
+    return y;
+  }
+}
+
+class StyString {
+  constructor(idx, rnd) {
+    this.i = idx; this.rnd = rnd;
+    this.v = new StyLoop(); this.h = new StyLoop();
+    this.hist = new Float32Array(4096); this.hw = 0;
+    this.f = 440 * Math.pow(2, (STY_OPEN[idx] - 69) / 12); this.P = 100; this.fret = 0;
+    this.noiseEnv = 0; this.nz1 = 0;
+    this.level = 0;
+  }
+}
+
+class GuitarCore {
+  constructor(sr, seed) {
+    this.sr = sr; this.rnd = styRng(seed || 12345);
+    this.p = { jitter: 1, instr: "acoustic", pickup: "neck", pickPos: 0.5, hardness: 0.75, sustain: 1, age: 0.3, tone: 0.5 };
+    this.S = []; for (let i = 0; i < 6; i++) this.S.push(new StyString(i, this.rnd));
+    this.bridge = 0;
+    this.modes = []; this.bx1 = 0; this.bx2 = 0;
+    this.dPrev = 0; this.hp = 0; this.hpx = 0;
+    this.pu = { b0: 0, b1: 0, b2: 0, a1: 0, a2: 0, x1: 0, x2: 0, y1: 0, y2: 0 };
+    this.setParams({});
+  }
+  get I() { return STY_INSTR[this.p.instr] || STY_INSTR.acoustic; }
+  setParams(q) {
+    Object.assign(this.p, q);
+    const sr = this.sr, I = this.I;
+    // body modes
+    this.modes = STY_BODY.map(([f, t, g]) => {
+      f *= I.body || 1;
+      const r = Math.pow(10, -3 / (t * sr)), th = STY_TWO_PI * f / sr;
+      return { a1: 2 * r * Math.cos(th), a2: -r * r, k: (1 - r * r) / 2 * g, y1: 0, y2: 0 };
+    });
+    // pickup resonance (RBJ lowpass)
+    const pk = this.p.pickup;
+    const fc = pk === "bridge" ? 5200 : pk === "both" ? 4700 : 4200;
+    const Q = pk === "both" ? 1.3 : pk === "bridge" ? 1.9 : 2.2;
+    const w = STY_TWO_PI * fc / sr, al = Math.sin(w) / (2 * Q), cw = Math.cos(w), a0 = 1 + al;
+    Object.assign(this.pu, { b0: (1 - cw) / 2 / a0, b1: (1 - cw) / a0, b2: (1 - cw) / 2 / a0, a1: -2 * cw / a0, a2: (1 - al) / a0 });
+    this.hpA = Math.exp(-STY_TWO_PI * 60 / sr);
+    // re-tune idle strings to open pitch so sympathetic resonance is right
+    for (const s of this.S) if (!s.active) this.retune(s, STY_OPEN[s.i], 0, "ring", true);
+  }
+  t60For(s, midi, fret, mode) {
+    const I = this.I, p = this.p, i = s.i;
+    const f = 440 * Math.pow(2, (midi - 69) / 12), fOpen = 440 * Math.pow(2, (STY_OPEN[i] - 69) / 12);
+    const ageK = 1.45 - 1.1 * p.age;
+    if (mode === "pm") { const t = styClamp(0.32 * Math.pow(110 / f, 0.3), 0.14, 0.4) * (0.7 + 0.3 * p.sustain); return [t, 0.035]; }
+    if (mode === "dead") return [0.02, 0.008];
+    if (mode === "rel") return [this.p.instr === "electric" ? 0.12 : 0.18, 0.04];
+    let t = I.t60[i] * p.sustain * Math.pow(fOpen / f, 0.55) * (fret > 0 ? 0.85 : 1);
+    let th = I.hi[i] * ageK * Math.pow(fOpen / f, 0.2) * (0.75 + 0.5 * p.sustain);
+    th = Math.min(th, t * 0.6);
+    return [t, th];
+  }
+  retune(s, midi, fret, mode, snap, detuneC) {
+    const I = this.I, sr = this.sr;
+    const f = 440 * Math.pow(2, (midi - 69 + (detuneC || 0) / 100) / 12);
+    const [t, th] = this.t60For(s, midi, fret, mode);
+    const B = I.B[s.i] * Math.pow(2, 2 * fret / 12);
+    const dv = I.detune / 2;
+    s.v.tune(sr, f * Math.pow(2, dv / 1200), t * I.vert, th * I.vert, I.hiF, B);
+    s.h.tune(sr, f * Math.pow(2, -dv / 1200), t * I.hor, th * I.hor, I.hiF, B);
+    if (snap) { s.v.snap(); s.h.snap(); }
+    s.f = f; s.P = sr / f; s.fret = fret; s.midi = midi;
+  }
+  // str 0..5 (0 = low E), midi note, vel 0..1, opts {pm, dead}
+  noteOn(str, midi, vel, opts) {
+    const s = this.S[str]; if (!s) return;
+    opts = opts || {};
+    const p = this.p, I = this.I, rnd = this.rnd;
+    let fret = Math.max(0, Math.round(midi - STY_OPEN[str]));
+    const mode = opts.dead ? "dead" : opts.pm ? "pm" : "ring";
+    this.retune(s, midi, fret, mode, true, (rnd() - 0.5) * 2 * p.jitter);
+    s.active = true;
+    vel = styClamp(vel, 0.02, 1);
+    // pick point: fixed physical distance from bridge (30..200 mm), relative to vibrating length
+    const L = STY_SCALE_MM * Math.pow(2, -fret / 12);
+    const dmm = (30 + 170 * p.pickPos) * (1 + (rnd() - 0.5) * 0.12 * p.jitter);
+    let beta = dmm / L; if (beta > 0.5) beta = 1 - beta; beta = styClamp(beta, 0.03, 0.5);
+    // pick width: hard pick ~0.03 ms, soft finger ~1.4 ms; softer when played softly
+    const hard = styClamp(p.hardness * (I.pick) * (0.55 + 0.45 * vel) * (mode === "pm" ? 0.7 : 1), 0, 1);
+    const smooth = this.sr * (0.00003 + Math.pow(1 - hard, 1.6) * 0.0014);
+    // equal-loudness across the neck: pickups and bridges respond to velocity, so lower notes need
+    // proportionally larger displacement for the same force (string gauges are chosen this way)
+    const amp = Math.pow(vel, 1.25) * (1 + (rnd() - 0.5) * 0.12 * p.jitter) * 0.5 * Math.pow(196 / s.f, I.out === "body" ? 0.65 : 0.9);
+    const noise = mode === "dead" ? 0.6 : 0.025;
+    const th = (0.45 + rnd() * 0.5);           // pick angle -> energy split between polarisations
+    s.v.pluck(beta, amp * Math.cos(th), smooth, noise, rnd);
+    s.h.pluck(beta, amp * Math.sin(th), smooth, noise, rnd);
+    s.noiseEnv = I.out === "body" ? amp * 0.025 * hard : 0;
+    s.excAmp = amp;
+  }
+  noteOff(str) {
+    const s = this.S[str]; if (!s || !s.active) return;
+    this.retune(s, s.midi, s.fret, "rel", false);
+    s.active = false;
+  }
+  allOff() { for (let i = 0; i < 6; i++) this.noteOff(i); }
+  render(out, n0, n1) {
+    const S = this.S, I = this.I, p = this.p, sr = this.sr;
+    const body = I.out === "body";
+    const c = I.couple, mixV = I.mixV, mixH = I.mixH;
+    const pk = p.pickup;
+    const taps = pk === "both" ? [41, 160] : [pk === "bridge" ? 41 : 160];
+    const dly = [];
+    for (let j = 0; j < 6; j++) {
+      const s = S[j], L = STY_SCALE_MM * Math.pow(2, -s.fret / 12);
+      dly.push(taps.map(d => (d / L) * s.P));
+    }
+    const modes = this.modes, pu = this.pu, hpA = this.hpA;
+    const tone = 0.35 + 0.65 * p.tone;
+    for (let n = n0; n < n1; n++) {
+      const br = this.bridge * c;
+      let sum = 0, bsum = 0;
+      for (let j = 0; j < 6; j++) {
+        const s = S[j];
+        const yv = s.v.tick(br), yh = s.h.tick(0);
+        bsum += yv;
+        const x = yv * mixV + yh * mixH;
+        if (body) { sum += x; }
+        else {
+          const H = s.hist; H[s.hw] = x;
+          let acc = 0; const dl = dly[j];
+          for (let t = 0; t < dl.length; t++) {
+            const D = dl[t], di = Math.floor(D), fr = D - di;
+            let i1 = s.hw - di; if (i1 < 0) i1 += 4096;
+            let i2 = i1 - 1; if (i2 < 0) i2 += 4096;
+            acc += x - (H[i1] * (1 - fr) + H[i2] * fr);
+          }
+          sum += acc / dl.length;
+          if (++s.hw >= 4096) s.hw = 0;
+        }
+        const ax = x < 0 ? -x : x; s.level = ax > s.level ? ax : s.level * 0.9995;
+      }
+      this.bridge = bsum;
+      // velocity / bridge force
+      let d = sum - this.dPrev; this.dPrev = sum;
+      let y;
+      if (body) {
+        let acc = 0;
+        const xin = d - this.bx2; this.bx2 = this.bx1; this.bx1 = d;
+        for (let m = 0; m < modes.length; m++) {
+          const M = modes[m]; const o = M.a1 * M.y1 + M.a2 * M.y2 + M.k * xin; M.y2 = M.y1; M.y1 = o; acc += o;
+        }
+        y = acc * 2.2 + d * 0.55 * tone;
+        for (let j = 0; j < 6; j++) {   // pick / nail scrape, acoustic only
+          const s = S[j];
+          if (s.noiseEnv > 1e-5) { const z = this.rnd() * 2 - 1; const hpz = z - s.nz1; s.nz1 = z; y += hpz * s.noiseEnv; s.noiseEnv *= 0.996; }
+        }
+      } else {
+        const o = pu.b0 * d + pu.b1 * pu.x1 + pu.b2 * pu.x2 - pu.a1 * pu.y1 - pu.a2 * pu.y2;
+        pu.x2 = pu.x1; pu.x1 = d; pu.y2 = pu.y1; pu.y1 = o;
+        y = o * (0.6 + 0.8 * tone) + d * 0.15 * (tone - 0.35);
+      }
+      // DC / rumble high-pass
+      const hy = y - this.hpx + hpA * this.hp; this.hpx = y; this.hp = hy;
+      out[n] = hy * 1.6 * I.gain;
+    }
+  }
+  levels() { return this.S.map(s => s.level); }
+}
+
+
+// Event host: sample-accurate scheduling of {type:'on'|'off'|'params'|'panic', time} messages.
+class StyHost {
+  constructor(sr, seed) { this.sr = sr; this.core = new GuitarCore(sr, seed); this.q = []; }
+  msg(m) {
+    if (m.type === "params") { this.core.setParams(m.p); return; }
+    if (m.type === "panic") { this.q.length = 0; this.core.allOff(); return; }
+    this.q.push(m);
+    if (m.type === "on" && m.dur > 0) this.q.push({ type: "off", time: m.time + m.dur, s: m.s, tag: m });
+    this.q.sort((a, b) => a.time - b.time);
+  }
+  block(out, t0) {
+    const n = out.length, sr = this.sr, core = this.core, q = this.q;
+    let pos = 0;
+    while (q.length) {
+      const e = q[0];
+      let f = Math.round((e.time - t0) * sr);
+      if (f >= n) break;
+      if (f < pos) f = pos;
+      if (f > pos) { core.render(out, pos, f); pos = f; }
+      q.shift();
+      if (e.type === "on") { core.S[e.s].onTag = e; core.noteOn(e.s, e.midi, e.vel, e); }
+      else if (e.type === "off") { if (!e.tag || core.S[e.s].onTag === e.tag) core.noteOff(e.s); }
+    }
+    if (pos < n) core.render(out, pos, n);
+  }
+}
+
+if (typeof module !== "undefined") module.exports = { GuitarCore, StyHost, STY_OPEN, STY_INSTR };
+
+</script>
+
+<script id="theory">
+/* Akordų teorija ir pirštuočių paieška grife. Grynos funkcijos: veikia naršyklėje ir Node testuose. */
+const TH_OPEN = [40, 45, 50, 55, 59, 64];               // E2 A2 D3 G3 B3 E4, 0 = žemoji E
+const TH_NAT = [0, 2, 4, 5, 7, 9, 11];                  // C D E F G A B
+const TH_LET = ["C", "D", "E", "F", "G", "A", "B"];
+
+const ROOTS = [
+  { n: "A", pc: 9, L: 5 }, { n: "B♭", pc: 10, L: 6, alt: "A♯" }, { n: "B", pc: 11, L: 6 },
+  { n: "C", pc: 0, L: 0 }, { n: "C♯", pc: 1, L: 0, alt: "D♭" }, { n: "D", pc: 2, L: 1 },
+  { n: "E♭", pc: 3, L: 2, alt: "D♯" }, { n: "E", pc: 4, L: 2 }, { n: "F", pc: 5, L: 3 },
+  { n: "F♯", pc: 6, L: 3, alt: "G♭" }, { n: "G", pc: 7, L: 4 }, { n: "A♭", pc: 8, L: 5, alt: "G♯" }
+];
+
+const LAB0 = { 0: "R", 1: "♭9", 2: "9", 3: "♭3", 4: "3", 5: "4", 6: "♭5", 7: "5", 8: "♯5", 9: "6", 10: "♭7", 11: "7" };
+// s = priesaga, t = pavadinimas, req = privalomi intervalai, opt = galimi, imp = svarba (nepilniems), lab = žymės
+const FAMS = [
+  ["Trigarsiai", [
+    { id: "maj", s: "", t: "mažorinis", req: [0, 4, 7], imp: [0, 4, 7] },
+    { id: "m", s: "m", t: "minorinis", req: [0, 3, 7], imp: [0, 3, 7] },
+    { id: "dim", s: "dim", t: "sumažintas", req: [0, 3, 6], imp: [0, 3, 6] },
+    { id: "aug", s: "aug", t: "padidintas", req: [0, 4, 8], imp: [0, 4, 8] },
+    { id: "sus2", s: "sus2", t: "su sekunda", req: [0, 2, 7], imp: [0, 2, 7], lab: { 2: "2" } },
+    { id: "sus4", s: "sus4", t: "su kvarta", req: [0, 5, 7], imp: [0, 5, 7] },
+    { id: "5", s: "5", t: "kvinta, powerchord", req: [0, 7], imp: [0, 7] }
+  ]],
+  ["Sekstos", [
+    { id: "6", s: "6", t: "mažorinis su seksta", req: [0, 4, 9], opt: [7], imp: [0, 4, 9, 7] },
+    { id: "m6", s: "m6", t: "minorinis su seksta", req: [0, 3, 9], opt: [7], imp: [0, 3, 9, 7] },
+    { id: "69", s: "6/9", t: "seksta ir nona", req: [0, 4, 9, 2], opt: [7], imp: [4, 9, 2, 0, 7] }
+  ]],
+  ["Septakordai", [
+    { id: "7", s: "7", t: "dominantinis", req: [0, 4, 10], opt: [7], imp: [0, 4, 10, 7] },
+    { id: "maj7", s: "maj7", t: "didysis", req: [0, 4, 11], opt: [7], imp: [0, 4, 11, 7] },
+    { id: "m7", s: "m7", t: "minorinis", req: [0, 3, 10], opt: [7], imp: [0, 3, 10, 7] },
+    { id: "mmaj7", s: "m(maj7)", t: "minorinis su didžiąja septima", req: [0, 3, 11], opt: [7], imp: [0, 3, 11, 7] },
+    { id: "m7b5", s: "m7♭5", t: "pusiau sumažintas", req: [0, 3, 6, 10], imp: [0, 6, 10, 3] },
+    { id: "dim7", s: "dim7", t: "sumažintas", req: [0, 3, 6, 9], imp: [0, 3, 6, 9], lab: { 9: "♭♭7" } },
+    { id: "7sus4", s: "7sus4", t: "dominantinis su kvarta", req: [0, 5, 10], opt: [7], imp: [0, 5, 10, 7] },
+    { id: "7s5", s: "7♯5", t: "padidintas", req: [0, 4, 8, 10], imp: [4, 10, 8, 0] }
+  ]],
+  ["Nonakordai", [
+    { id: "add9", s: "add9", t: "su pridėta nona", req: [0, 4, 2], opt: [7], imp: [0, 4, 2, 7] },
+    { id: "madd9", s: "m(add9)", t: "minorinis su nona", req: [0, 3, 2], opt: [7], imp: [0, 3, 2, 7] },
+    { id: "9", s: "9", t: "dominantinis", req: [0, 4, 10, 2], opt: [7], imp: [4, 10, 2, 0, 7] },
+    { id: "maj9", s: "maj9", t: "didysis", req: [0, 4, 11, 2], opt: [7], imp: [4, 11, 2, 0, 7] },
+    { id: "m9", s: "m9", t: "minorinis", req: [0, 3, 10, 2], opt: [7], imp: [3, 10, 2, 0, 7] },
+    { id: "7b9", s: "7♭9", t: "su žemąja nona", req: [0, 4, 10, 1], opt: [7], imp: [4, 10, 1, 0, 7] },
+    { id: "7s9", s: "7♯9", t: "su aukštąja nona", req: [0, 4, 10, 3], opt: [7], imp: [4, 10, 3, 0, 7], lab: { 3: "♯9" } }
+  ]],
+  ["Undecimos", [
+    { id: "add11", s: "add11", t: "su pridėta undecima", req: [0, 4, 5], opt: [7], imp: [0, 4, 5, 7], lab: { 5: "11" } },
+    { id: "11", s: "11", t: "dominantinis, be tercijos", req: [0, 10, 2, 5], opt: [7], imp: [0, 10, 5, 2, 7], lab: { 5: "11" } },
+    { id: "m11", s: "m11", t: "minorinis", req: [0, 3, 10, 5], opt: [7, 2], imp: [3, 10, 5, 0, 7, 2], lab: { 5: "11" } },
+    { id: "maj7s11", s: "maj7♯11", t: "lidinis", req: [0, 4, 11, 6], opt: [7, 2], imp: [4, 11, 6, 0, 7, 2], lab: { 6: "♯11" } }
+  ]],
+  ["Tercdecimos", [
+    { id: "13", s: "13", t: "dominantinis", req: [0, 4, 10, 9], opt: [7, 2], imp: [4, 10, 9, 0, 2, 7], lab: { 9: "13" } },
+    { id: "maj13", s: "maj13", t: "didysis", req: [0, 4, 11, 9], opt: [2, 7], imp: [4, 11, 9, 0, 2, 7], lab: { 9: "13" } },
+    { id: "m13", s: "m13", t: "minorinis", req: [0, 3, 10, 9], opt: [2, 7], imp: [3, 10, 9, 0, 2, 7], lab: { 9: "13" } }
+  ]]
+];
+const TYPES = {};
+for (const [fam, list] of FAMS) for (const t of list) { t.fam = fam; t.opt = t.opt || []; TYPES[t.id] = t; }
+
+function labOf(t, iv) { return (t.lab && t.lab[iv]) || LAB0[iv]; }
+// taisyklinga natos rašyba pagal laipsnį (A + ♭3 = C, ne B♯)
+function noteName(root, t, iv) {
+  const lab = labOf(t, iv);
+  const n = lab === "R" ? 1 : parseInt(lab.replace(/[^0-9]/g, ""), 10);
+  const L = (root.L + (n - 1)) % 7, pc = (root.pc + iv) % 12;
+  const d = (pc - TH_NAT[L] + 12) % 12;
+  return TH_LET[L] + ({ 0: "", 1: "♯", 2: "𝄪", 11: "♭", 10: "♭♭" }[d] ?? "?");
+}
+function chordName(root, t) { return root.n + t.s; }
+function role(t, iv) {
+  const l = labOf(t, iv);
+  if (l === "R") return 0;
+  if (["3", "♭3", "2"].includes(l) || (l === "4" && !t.req.includes(4) && !t.req.includes(3))) return 1;
+  if (["5", "♭5", "♯5"].includes(l)) return 2;
+  if (["7", "♭7", "♭♭7"].includes(l)) return 3;
+  return 4;
+}
+const ROLE_NAME = ["Pagrindinė padėtis", "1 apvertimas", "2 apvertimas", "3 apvertimas"];
+
+/* ---------------------------------------------------------------- paieška */
+function fingersOf(fr) {
+  const fd = [];
+  for (let s = 0; s < 6; s++) if (fr[s] > 0) fd.push([s, fr[s]]);
+  if (!fd.length) return { n: 0, barre: null };
+  let minF = 99; for (const x of fd) minF = Math.min(minF, x[1]);
+  const at = fd.filter(x => x[1] === minF);
+  let n = fd.length, barre = null;
+  if (at.length >= 2) {
+    const lo = at[0][0], hi = at[at.length - 1][0];
+    let ok = true; for (let s = lo; s <= hi; s++) if (fr[s] === 0 || fr[s] == null || fr[s] < minF) ok = false;
+    if (ok) {
+      const nb = 1 + fd.filter(x => x[1] > minF).length;
+      if (nb < n && (n > 4 || at.length >= 3)) { barre = { f: minF, lo, hi }; n = nb; }
+    }
+  }
+  return { n, barre };
+}
+function mkVoicing(fr) {
+  const f = fingersOf(fr);
+  let lo = 99, hi = 0, open = false, played = 0;
+  for (const x of fr) { if (x == null) continue; played++; if (x === 0) open = true; else { lo = Math.min(lo, x); hi = Math.max(hi, x); } }
+  if (lo === 99) lo = hi = 0;
+  return { fr, fing: f.n, barre: f.barre, minF: lo, maxF: hi, open, n: played, key: fr.map(x => x == null ? "x" : x).join(",") };
+}
+function midis(fr) { const m = []; for (let s = 0; s < 6; s++) if (fr[s] != null) m.push(TH_OPEN[s] + fr[s]); return m; }
+
+// visos tęstinės stygų grupės su n stygų
+function blocksN(nMin, nMax, lo, hi) {
+  const out = [];
+  lo = lo ?? 0; hi = hi ?? 5;
+  for (let a = lo; a <= hi; a++) for (let b = a + nMin - 1; b <= Math.min(hi, a + nMax - 1); b++) out.push([a, b]);
+  return out;
+}
+/* o: {root(pc), req[], opt[] (intervalai), bass (pc|null), blocks, span, maxFret, noDouble} */
+function search(o) {
+  const reqPc = [...new Set(o.req.map(i => (o.root + i) % 12))];
+  const allow = new Set([...o.req, ...(o.opt || [])].map(i => (o.root + i) % 12));
+  const span = o.span ?? 3, maxF = o.maxFret ?? 15;
+  const res = new Map();
+  for (const [a, b] of o.blocks) {
+    const n = b - a + 1;
+    if (n < reqPc.length) continue;
+    for (let w = 1; w + span <= maxF; w++) {
+      const cand = [];
+      let dead = false;
+      for (let s = a; s <= b; s++) {
+        const c = [];
+        if (allow.has(TH_OPEN[s] % 12)) c.push(0);
+        for (let f = w; f <= w + span; f++) if (allow.has((TH_OPEN[s] + f) % 12)) c.push(f);
+        if (!c.length) { dead = true; break; }
+        cand.push(c);
+      }
+      if (dead) continue;
+      // bosas
+      if (o.bass != null) { cand[0] = cand[0].filter(f => (TH_OPEN[a] + f) % 12 === o.bass); if (!cand[0].length) continue; }
+      const cur = new Array(n);
+      const rec = k => {
+        if (k === n) {
+          const pcs = cur.map((f, i) => (TH_OPEN[a + i] + f) % 12);
+          for (const p of reqPc) if (!pcs.includes(p)) return;
+          if (o.noDouble && new Set(pcs).size !== pcs.length) return;
+          const fr = [null, null, null, null, null, null];
+          for (let i = 0; i < n; i++) fr[a + i] = cur[i];
+          if (res.has(fr.join())) return;
+          const v = mkVoicing(fr);
+          if (v.fing > 4) return;
+          if (v.maxF - v.minF > span) return;
+          if (v.open && v.minF > (o.openMax ?? 99)) return;
+          res.set(fr.join(), v);
+          return;
+        }
+        for (const f of cand[k]) { cur[k] = f; rec(k + 1); }
+      };
+      rec(0);
+    }
+  }
+  return [...res.values()];
+}
+function score(v, root, t) {
+  const m = midis(v.fr);
+  let sc = v.n * 6 - v.fing * 2.2 - (v.maxF - v.minF) * 1.4 - v.minF * 0.35;
+  const ivs = m.map(x => ((x - root) % 12 + 12) % 12);
+  const cnt = {}; for (const i of ivs) cnt[i] = (cnt[i] || 0) + 1;
+  for (const i of t.opt) if (cnt[i]) sc += 3;
+  for (const i in cnt) { const r = role(t, +i); if (cnt[i] > 1 && r === 4) sc -= 3 * (cnt[i] - 1); if (cnt[i] > 2) sc -= 2; if (cnt[i] > 1 && r === 1) sc -= 1; }
+  for (let k = 1; k < m.length; k++) { const g = m[k] - m[k - 1]; if (m[k - 1] < 52 && g < 3) sc -= 5; else if (m[k - 1] < 47 && g < 5) sc -= 2; }
+  const nOpen = v.fr.filter(x => x === 0).length;
+  if (v.open && v.maxF <= 4) sc += 1.5 * nOpen; else if (v.minF >= 5) sc -= 2.5 * nOpen;
+  if (ivs[ivs.length - 1] === 0) sc += 1;
+  return sc;
+}
+function bucket(v) { return v.open && v.maxF <= 4 ? 0 : v.minF; }
+function pickDiverse(list, root, t, lim) {
+  list.forEach(v => v.sc = score(v, root, t));
+  list.sort((a, b) => b.sc - a.sc);
+  const seen = new Set(), out = [];
+  for (const v of list) {
+    const b = bucket(v);
+    if (seen.has(b) || (b > 0 && out.some(u => bucket(u) > 0 && Math.abs(bucket(u) - b) < 2 && u.fr.findIndex(x => x != null) === v.fr.findIndex(x => x != null)))) continue;
+    seen.add(b); out.push(v); if (out.length >= lim) break;
+  }
+  return out.sort((a, b) => bucket(a) - bucket(b) || a.fr.findIndex(x => x != null) - b.fr.findIndex(x => x != null));
+}
+function bassLabel(t, v, rootPc) {
+  const b = midis(v.fr)[0], iv = ((b - rootPc) % 12 + 12) % 12, r = role(t, iv);
+  return r < 4 ? ROLE_NAME[r] : labOf(t, iv) + " bose";
+}
+
+/* ---------------------------------------------------------------- vaizdai */
+function viewFull(root, t) {
+  const nMin = Math.max(t.id === "5" ? 2 : 4, t.req.length);
+  const list = search({ root: root.pc, req: t.req, opt: t.opt, bass: root.pc, blocks: blocksN(nMin, 6) });
+  const items = pickDiverse(list, root.pc, t, 10).map(v => Object.assign(v, { tag: v.minF === 0 || bucket(v) === 0 ? "atviras" : v.minF + " laukelis" }));
+  return [{ title: "Pilni akordai", sub: "root bose · nuo atvirų iki aukštų pozicijų", items }];
+}
+function viewInv(root, t) {
+  const ivs = [...t.req, ...t.opt].filter((x, i, a) => a.indexOf(x) === i)
+    .sort((a, b) => (role(t, a) - role(t, b)) || a - b);
+  const groups = [];
+  for (const iv of ivs) {
+    const bass = (root.pc + iv) % 12, r = role(t, iv);
+    if (iv === 0 && t.id === "5") continue;
+    const list = search({ root: root.pc, req: t.req, opt: t.opt, bass, blocks: blocksN(Math.max(3, t.req.length), 6), openMax: 7 });
+    if (!list.length) continue;
+    const items = pickDiverse(list, root.pc, t, 4);
+    const slash = iv === 0 ? chordName(root, t) : chordName(root, t) + "/" + noteName(root, t, iv);
+    items.forEach(v => { v.name = slash; v.tag = v.minF === 0 || bucket(v) === 0 ? "atviras" : v.minF + " laukelis"; });
+    groups.push({ title: r < 4 ? ROLE_NAME[r] : labOf(t, iv) + " bose", sub: slash + " · bose " + noteName(root, t, iv) + " (" + labOf(t, iv) + ")", items });
+  }
+  return groups;
+}
+const SETS = {
+  high: [[[3, 5], "G–B–e", 3], [[2, 4], "D–G–B", 3], [[2, 5], "D–G–B–e", 4]],
+  low: [[[0, 2], "E–A–D", 3], [[1, 3], "A–D–G", 3], [[0, 3], "E–A–D–G", 4], [[1, 4], "A–D–G–B", 4]]
+};
+function viewSet(root, t, which) {
+  const groups = [];
+  for (const [blk, name, n] of SETS[which]) {
+    const imp = t.imp.filter((x, i, a) => a.indexOf(x) === i);
+    const req = imp.slice(0, n), exact = req.length === n;
+    const list = search({ root: root.pc, req, opt: [], bass: null, blocks: [blk], noDouble: exact, maxFret: 15, openMax: 4 });
+    let items;
+    if (exact) items = list.sort((a, b) => a.minF - b.minF || a.maxF - b.maxF);
+    else items = pickDiverse(list, root.pc, t, 12);
+    items = items.filter((v, i, a) => !(v.minF === 0 && a.some((u, j) => j !== i && u.minF === 0 && u.key === v.key)));
+    const rootless = !req.includes(0);
+    items.forEach(v => { v.tag = bassLabel(t, v, root.pc); v.pos = v.maxF === 0 ? "atviri" : (v.minF || v.maxF) + " lauk."; });
+    if (items.length) groups.push({ title: name + " stygos", sub: n + " stygos · " + req.map(i => labOf(t, i)).join(" ") + (rootless ? " · be root" : ""), items });
+  }
+  return groups;
+}
+const POW = [
+  { t: "Powerchord", sub: "R–5–8 · klasikinis", st: [0, 7, 12], b: 0 },
+  { t: "Kvinta", sub: "R–5 · du garsai", st: [0, 7], b: 0 },
+  { t: "Platus powerchord", sub: "R–5–8–5", st: [0, 7, 12, 19], b: 0 },
+  { t: "Apverstas powerchord", sub: "5–R–5 · kvinta bose", st: [0, 5, 12], b: 7 },
+  { t: "Apversta kvinta (kvarta)", sub: "5–R · du garsai", st: [0, 5], b: 7 },
+  { t: "Kvarta nuo root", sub: "R–4 · sus skambesys", st: [0, 5], b: 0 },
+  { t: "Kvartinis akordas", sub: "R–4–♭7 · kvartos viena ant kitos", st: [0, 5, 10], b: 0 },
+  { t: "Kvartinis 4 garsų", sub: "R–4–♭7–♭3", st: [0, 5, 10, 15], b: 0 }
+];
+const POW_LAB = { 0: "R", 5: "4", 7: "5", 10: "♭7", 3: "♭3" };
+function viewPower(root) {
+  const groups = [];
+  for (const P of POW) {
+    const items = [];
+    for (let b = 0; b + P.st.length <= 6; b++) {
+      for (let f = 0; f <= 14; f++) {
+        if ((TH_OPEN[b] + f) % 12 !== (root.pc + P.b) % 12) continue;
+        const fr = [null, null, null, null, null, null]; let ok = true;
+        for (let k = 0; k < P.st.length; k++) {
+          const s = b + k, fret = TH_OPEN[b] + f + P.st[k] - TH_OPEN[s];
+          if (fret < 0 || fret > 17) { ok = false; break; }
+          fr[s] = fret;
+        }
+        if (!ok) continue;
+        const v = mkVoicing(fr);
+        if (v.maxF - v.minF > 3 || v.fing > 4 || (v.open && v.minF > 4)) continue;
+        v.tag = (6 - b) + " styga bose"; v.pos = v.maxF === 0 ? "atviri" : (v.minF || v.maxF) + " lauk.";
+        v.pow = true;
+        items.push(v);
+      }
+    }
+    items.sort((x, y) => x.fr.findIndex(q => q != null) - y.fr.findIndex(q => q != null) || x.minF - y.minF);
+    const T5 = TYPES["5"], fifth = noteName(root, T5, 7), fourth = noteName(root, TYPES.sus4, 5);
+    const sev = noteName(root, TYPES["7"], 10), m3 = noteName(root, TYPES.m, 3);
+    const nm = P.b ? root.n + "5/" + fifth : P.st[1] === 7 ? root.n + "5" : [root.n, fourth, sev, m3].slice(0, P.st.length).join("–");
+    if (items.length) groups.push({ title: P.t, sub: P.sub, items, name: nm, lab: POW_LAB });
+  }
+  return groups;
+}
+
+if (typeof module !== "undefined") module.exports = { ROOTS, TYPES, FAMS, search, viewFull, viewInv, viewSet, viewPower, noteName, chordName, labOf, midis };
+</script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+const OPEN = [40, 45, 50, 55, 59, 64];
+const SNAME = ["E", "A", "D", "G", "B", "e"];
+const NOTE = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+const SING = { Trigarsiai: "trigarsis", Sekstos: "akordas su seksta", Septakordai: "septakordas", Nonakordai: "nonakordas", Undecimos: "undecimakordas", Tercdecimos: "tercdecimakordas" };
+const DESC = {
+  sus2: "trigarsis su sekunda vietoj tercijos", sus4: "trigarsis su kvarta vietoj tercijos", "5": "kvinta be tercijos · powerchord",
+  "6": "mažorinis akordas su seksta", m6: "minorinis akordas su seksta", "69": "mažorinis akordas su seksta ir nona",
+  mmaj7: "minorinis trigarsis su didžiąja septima", "7sus4": "dominantinis septakordas su kvarta", "7s5": "dominantinis septakordas su padidinta kvinta",
+  add9: "mažorinis trigarsis su pridėta nona", madd9: "minorinis trigarsis su pridėta nona", "7b9": "dominantinis septakordas su žemąja nona",
+  "7s9": "dominantinis septakordas su aukštąja nona", add11: "mažorinis trigarsis su pridėta undecima", "11": "dominantinis undecimakordas, tercija praleista",
+  maj7s11: "didysis septakordas su aukštąja undecima", m7b5: "pusiau sumažintas septakordas", dim7: "sumažintas septakordas"
+};
+const VIEWS = [
+  ["full", "Pilni", "Visas akordas su root bose: atviri, barė ir aukštesnės pozicijos. Ilgesniems akordams (9, 11, 13) kvinta kartais praleidžiama, taip groja ir gitaristai."],
+  ["inv", "Apversti", "Tas pats akordas, bet bose kita akordo nata. 1 apvertimas – tercija bose, 2 – kvinta, 3 – septima. Pavadinime po brūkšnio parašyta boso nata."],
+  ["high", "Aukštos stygos", "Nepilni akordai tik ant aukštų stygų – skaidrus, šviesus skambesys, gerai tinka antrai gitarai. Kai stygų mažiau nei natų, paliekamos svarbiausios: tercija, septima, papildomi tonai."],
+  ["low", "Žemos stygos", "Nepilni akordai ant žemų stygų – tankus, sodrus pagrindas. Ant trijų žemų stygų akordas skamba tirštai, tad tai gerai girdėti palyginimui."],
+  ["power", "Powerchordai", "Powerchordai, kvintos ir kvartos nuo pasirinkto root, iš kiekvienos bosinės stygos. Akordo tipas čia nesvarbus: kvinta neturi tercijos, todėl ji nei mažorinė, nei minorinė."]
+];
+const DEF = { root: 0, type: "m", view: "full", ghost: true, vel: .8, pickPos: .45, hardness: .75, sustain: 1, age: .3, tone: .5, strum: 16, room: .22, vol: .8 };
+let S = Object.assign({}, DEF);
+try { const j = JSON.parse(localStorage.getItem("lempinis.akordai.v1") || "null"); if (j) S = Object.assign(S, j); } catch (e) {}
+if (!TYPES[S.type]) S.type = "m";
+if (!VIEWS.some(v => v[0] === S.view)) S.view = "full";
+let saveT = 0;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem("lempinis.akordai.v1", JSON.stringify(S)); } catch (e) {} }, 300); }
+
+/* ================================================================ garsas (Lempinio stygų variklis) */
+const PROC = `
+class StygosProc extends AudioWorkletProcessor {
+  constructor() { super(); this.h = new StyHost(sampleRate, (Math.random() * 4e9) >>> 0); this.c = 0;
+    this.port.onmessage = e => { const d = e.data; if (Array.isArray(d)) d.forEach(m => this.h.msg(m)); else this.h.msg(d); }; }
+  process(_, outs) {
+    const o = outs[0], ch = o[0];
+    this.h.block(ch, currentTime);
+    for (let c = 1; c < o.length; c++) o[c].set(ch);
+    if (++this.c % 8 === 0) this.port.postMessage(this.h.core.levels());
+    return true;
+  }
+}
+registerProcessor("stygos", StygosProc);`;
+let ctx = null, G = null, engine = null, levels = [0, 0, 0, 0, 0, 0], booting = null;
+function unlockIOS() {
+  try {
+    const sr = 8000, n = 800, bytes = new Uint8Array(44 + n), dv = new DataView(bytes.buffer);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) bytes[o + i] = s.charCodeAt(i); };
+    w(0, "RIFF"); dv.setUint32(4, 36 + n, true); w(8, "WAVE"); w(12, "fmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+    dv.setUint32(24, sr, true); dv.setUint32(28, sr, true); dv.setUint16(32, 1, true); dv.setUint16(34, 8, true); w(36, "data"); dv.setUint32(40, n, true); bytes.fill(128, 44);
+    let bin = ""; bytes.forEach(b => bin += String.fromCharCode(b));
+    const a = new Audio("data:audio/wav;base64," + btoa(bin)); a.loop = true; a.volume = .01; a.setAttribute("playsinline", "");
+    const p = a.play(); if (p && p.catch) p.catch(() => {});
+  } catch (e) {}
+}
+function ensureAudio() {
+  if (ctx) { if (ctx.state === "suspended") ctx.resume(); return booting; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC({ latencyHint: "interactive" });
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+  unlockIOS();
+  buildChain();
+  booting = makeEngine().then(() => { applyParams(); applyOut(); });
+  return booting;
+}
+async function makeEngine() {
+  const src = $("dsp").textContent + PROC;
+  let ok = false;
+  if (ctx.audioWorklet && window.AudioWorkletNode) {
+    const urls = [];
+    try { urls.push(URL.createObjectURL(new Blob([src], { type: "application/javascript" }))); } catch (e) {}
+    try { urls.push("data:application/javascript;base64," + btoa(unescape(encodeURIComponent(src)))); } catch (e) {}
+    for (const u of urls) { try { await ctx.audioWorklet.addModule(u); ok = true; break; } catch (e) {} }
+  }
+  if (ok) {
+    const node = new AudioWorkletNode(ctx, "stygos", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [1] });
+    node.port.onmessage = e => { levels = e.data; };
+    node.connect(G.di);
+    engine = { kind: "AudioWorklet", post: m => node.port.postMessage(m) };
+  } else {
+    const host = new StyHost(ctx.sampleRate, (Math.random() * 4e9) >>> 0);
+    const sp = ctx.createScriptProcessor(1024, 1, 1);
+    sp.onaudioprocess = e => { const o = e.outputBuffer.getChannelData(0); o.fill(0); host.block(o, e.playbackTime); levels = host.core.levels(); };
+    sp.connect(G.di);
+    engine = { kind: "ScriptProcessor", post: m => host.msg(m) };
+  }
+  $("engine").innerHTML = `<b>${(ctx.sampleRate / 1000).toFixed(1).replace(".0", "")} kHz</b> · akustinė · 6 stygos`;
+}
+function roomIR() {
+  const sr = ctx.sampleRate, len = Math.floor(sr * 2.1), b = ctx.createBuffer(2, len, sr);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = b.getChannelData(ch); let lp = 0;
+    for (let i = 0; i < len; i++) {
+      const t = i / sr, k = clamp(.5 - t * .2, .08, .5);
+      lp += k * ((Math.random() * 2 - 1) - lp);
+      d[i] = lp * Math.exp(-t * 3.1) * (t < .008 ? t / .008 : 1);
+    }
+    for (const [ms, g] of [[11, .5], [17, .35], [23, .3], [31, .22], [43, .16]]) { const i = Math.floor((ms + ch * 3) * sr / 1000); if (i < len) d[i] += g * (ch ? -.8 : 1); }
+  }
+  return b;
+}
+function buildChain() {
+  const g = v => { const n = ctx.createGain(); n.gain.value = v; return n; };
+  G = {};
+  G.di = g(1); G.post = g(1);
+  G.send = g(.2); G.conv = ctx.createConvolver(); G.conv.buffer = roomIR(); G.ret = g(.9);
+  G.master = g(.8);
+  G.lim = ctx.createDynamicsCompressor();
+  G.lim.threshold.value = -3; G.lim.knee.value = 3; G.lim.ratio.value = 14; G.lim.attack.value = .002; G.lim.release.value = .15;
+  G.an = ctx.createAnalyser(); G.an.fftSize = 2048;
+  G.di.connect(G.post);
+  G.post.connect(G.master); G.post.connect(G.send).connect(G.conv).connect(G.ret).connect(G.master);
+  G.master.connect(G.lim).connect(G.an).connect(ctx.destination);
+}
+function sm(p, v) { p.setTargetAtTime(v, ctx.currentTime, .03); }
+function applyOut() { if (!G) return; sm(G.send.gain, S.room * .75); sm(G.master.gain, Math.pow(S.vol, 1.5) * 1.1); }
+function applyParams() {
+  if (!engine) return;
+  engine.post({ type: "params", p: { instr: "acoustic", pickup: "neck", pickPos: S.pickPos, hardness: S.hardness, sustain: S.sustain, age: S.age, tone: S.tone } });
+}
+
+/* ================================================================ grojimas */
+const fretOf = new Array(6).fill(null);
+const lastHit = new Array(6).fill(-1e9);
+function nn(m) { return NOTE[m % 12] + (Math.floor(m / 12) - 1); }
+function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+function play(s, fret, when, vel) {
+  engine.post({ type: "on", time: when, s, midi: OPEN[s] + fret, vel: clamp(vel, .05, 1) });
+  setTimeout(() => { lastHit[s] = performance.now(); fretOf[s] = fret; }, Math.max(0, (when - ctx.currentTime) * 1000));
+}
+function damp(s, when) { engine.post({ type: "off", time: when, s }); setTimeout(() => { fretOf[s] = null; }, Math.max(0, (when - ctx.currentTime) * 1000)); }
+function strumFr(fr, dir, when, velK) {
+  let idx = [0, 1, 2, 3, 4, 5].filter(i => fr[i] != null);
+  if (dir === "up") idx = idx.reverse().slice(0, Math.max(Math.min(3, idx.length), idx.length - 2));
+  const spread = S.strum / 1000;
+  let t = when;
+  for (let k = 0; k < 6; k++) if (fr[k] == null) damp(k, when);
+  idx.forEach((s, k) => {
+    const v = S.vel * (velK || 1) * (dir === "up" ? .78 : 1) * (1 - k * .035) * (.92 + Math.random() * .16);
+    play(s, fr[s], t, v);
+    t += spread * (.75 + Math.random() * .5);
+  });
+}
+function flash() { const p = $("pilot"); p.style.opacity = 1; clearTimeout(flash.t); flash.t = setTimeout(() => p.style.opacity = "", 90); }
+function tabStr(fr) { const big = fr.some(f => f != null && f > 9); return fr.map(f => f == null ? "x" : f).join(big ? "·" : ""); }
+function voicingText(v) { return midis(v.fr).map(nn).join(" "); }
+async function strum(dir) {
+  const v = cur(); if (!v) return;
+  await ensureAudio();
+  strumFr(v.fr, dir, ctx.currentTime + .015, 1);
+  $("readout").innerHTML = `${esc(nameOf(v))} <em>· ${dir === "up" ? "aukštyn" : "žemyn"} · ${voicingText(v)} · ${tabStr(v.fr)}</em>`;
+  hitCard(); flash();
+}
+async function arpeggio() {
+  const v = cur(); if (!v) return;
+  await ensureAudio();
+  const pl = [0, 1, 2, 3, 4, 5].filter(i => v.fr[i] != null);
+  const pat = pl.length <= 2 ? [pl[0], pl[1] ?? pl[0], pl[0], pl[1] ?? pl[0]] : pl.concat(pl.slice(1, -1).reverse());
+  const step = 60 / 96 / 2, t0 = ctx.currentTime + .02;
+  for (let k = 0; k < 6; k++) if (v.fr[k] == null) damp(k, t0);
+  pat.forEach((s, i) => play(s, v.fr[s], t0 + i * step + (Math.random() - .5) * .008, S.vel * (i === 0 ? .95 : .74)));
+  $("readout").innerHTML = `${esc(nameOf(v))} <em>· pirštais · ${voicingText(v)}</em>`;
+  hitCard();
+}
+async function oneByOne() {
+  const v = cur(); if (!v) return;
+  await ensureAudio();
+  const pl = [0, 1, 2, 3, 4, 5].filter(i => v.fr[i] != null), t0 = ctx.currentTime + .03, step = .42;
+  for (let k = 0; k < 6; k++) damp(k, t0);
+  pl.forEach((s, i) => {
+    play(s, v.fr[s], t0 + i * step, S.vel * .85);
+    setTimeout(() => { const m = OPEN[s] + v.fr[s]; $("readout").innerHTML = `${nn(m)} <em>· ${labFor(m)} · ${hz(m).toFixed(1).replace(".", ",")} Hz · ${6 - s} styga</em>`; }, i * step * 1000 + 30);
+  });
+  setTimeout(() => { if (cur() === v) strum("down"); }, (pl.length * step + .35) * 1000);
+}
+async function muteAll() {
+  await ensureAudio();
+  const t = ctx.currentTime + .005;
+  for (let s = 0; s < 6; s++) damp(s, t);
+  if (auto.on) toggleAuto();
+}
+/* visų variantų demonstracija */
+const auto = { on: false, t: 0 };
+function toggleAuto() {
+  auto.on = !auto.on;
+  $("all").setAttribute("aria-pressed", auto.on);
+  $("all").textContent = auto.on ? "Sustabdyti" : "Groti visus variantus";
+  clearTimeout(auto.t);
+  if (auto.on) { strum("down"); auto.t = setTimeout(autoStep, 1900); }
+}
+function autoStep() {
+  if (!auto.on) return;
+  if (S.vi >= LIST.length - 1) { toggleAuto(); return; }
+  select(S.vi + 1, true);
+  auto.t = setTimeout(autoStep, 1900);
+}
+
+/* ================================================================ duomenys */
+let LIST = [], GROUPS = [], cache = new Map();
+S.vi = 0;
+const root = () => ROOTS[S.root];
+const type = () => TYPES[S.type];
+const cur = () => LIST[S.vi];
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function nameOf(v) { return v.name || chordName(root(), type()); }
+function labFor(m) {
+  const iv = ((m - root().pc) % 12 + 12) % 12;
+  if (S.view === "power") return { 0: "R", 5: "4", 7: "5", 10: "♭7", 3: "♭3" }[iv] || "?";
+  return labOf(type(), iv);
+}
+function compute() {
+  const k = S.root + "|" + S.type + "|" + S.view;
+  if (!cache.has(k)) {
+    const r = root(), t = type();
+    const g = S.view === "full" ? viewFull(r, t) : S.view === "inv" ? viewInv(r, t) : S.view === "power" ? viewPower(r) : viewSet(r, t, S.view);
+    g.forEach(gr => gr.items.forEach(v => { if (gr.name) v.name = gr.name; }));
+    cache.set(k, g);
+  }
+  GROUPS = cache.get(k);
+  LIST = []; GROUPS.forEach(gr => gr.items.forEach(v => LIST.push(v)));
+}
+function select(i, sound) {
+  if (!LIST.length) return;
+  S.vi = clamp(i, 0, LIST.length - 1);
+  for (const b of document.querySelectorAll(".vc")) b.setAttribute("aria-pressed", +b.dataset.i === S.vi);
+  renderIdent();
+  const b = document.querySelector(`.vc[data-i="${S.vi}"]`);
+  if (b && sound) b.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" });
+  if (sound) strum("down");
+  else { const v = cur(); $("readout").innerHTML = `${esc(nameOf(v))} <em>· ${voicingText(v)} · ${tabStr(v.fr)}</em>`; }
+}
+function hitCard() { const b = document.querySelector(`.vc[data-i="${S.vi}"]`); if (!b) return; b.classList.add("hit"); clearTimeout(b._t); b._t = setTimeout(() => b.classList.remove("hit"), 170); }
+
+/* ================================================================ UI */
+function renderRoots() {
+  const box = $("roots");
+  if (!box.children.length) ROOTS.forEach((r, i) => {
+    const b = document.createElement("button"); b.id = "root-" + i;
+    b.innerHTML = `<b>${r.n}</b><span>${r.alt || ""}</span>`;
+    b.title = r.alt ? `${r.n} (${r.alt})` : r.n;
+    b.onclick = () => { S.root = i; refresh(true); };
+    box.appendChild(b);
+  });
+  [...box.children].forEach((b, i) => b.setAttribute("aria-pressed", i === S.root));
+}
+function renderTypes() {
+  const box = $("fams"); box.innerHTML = "";
+  for (const [fam, list] of FAMS) {
+    const d = document.createElement("div"); d.className = "fam";
+    d.innerHTML = `<span class="lab">${fam}</span><div class="chips"></div>`;
+    const c = d.querySelector(".chips");
+    for (const t of list) {
+      const b = document.createElement("button"); b.id = "type-" + t.id;
+      b.textContent = chordName(root(), t); b.title = DESC[t.id] || (t.t + " " + SING[t.fam]);
+      b.setAttribute("aria-pressed", t.id === S.type);
+      b.onclick = () => { S.type = t.id; if (t.id === "5") S.view = "power"; else if (S.view === "power") S.view = "full"; refresh(true); };
+      c.appendChild(b);
+    }
+    box.appendChild(d);
+  }
+}
+function renderViews() {
+  const box = $("views");
+  if (!box.children.length) VIEWS.forEach(([id, name]) => {
+    const b = document.createElement("button"); b.id = "view-" + id; b.setAttribute("role", "tab"); b.textContent = name;
+    b.onclick = () => { S.view = id; refresh(true); };
+    box.appendChild(b);
+  });
+  [...box.children].forEach((b, i) => b.setAttribute("aria-selected", VIEWS[i][0] === S.view));
+  $("vnote").textContent = VIEWS.find(v => v[0] === S.view)[2];
+}
+function renderIdent() {
+  const r = root(), t = type(), v = cur();
+  $("cname").textContent = v ? nameOf(v) : chordName(r, t);
+  let ivs, desc;
+  if (S.view === "power") {
+    const gr = GROUPS.find(g => g.items.includes(v));
+    ivs = gr ? [...new Set(midis(v.fr).map(m => ((m - r.pc) % 12 + 12) % 12))].sort((a, b) => a - b) : [0, 7];
+    desc = gr ? gr.title.toLowerCase() + " · " + gr.sub : "";
+    $("formula").innerHTML = ivs.map(iv => `<span class="${iv ? "" : "r"}"><b>${NOTE[(r.pc + iv) % 12]}</b><i>${labFor(r.pc + iv + 48)}</i></span>`).join("");
+  } else {
+    ivs = [...t.req, ...t.opt].filter((x, i, a) => a.indexOf(x) === i).sort((a, b) => a - b);
+    desc = DESC[t.id] || (t.t + " " + SING[t.fam]);
+    const have = v ? new Set(midis(v.fr).map(m => ((m - r.pc) % 12 + 12) % 12)) : new Set(ivs);
+    $("formula").innerHTML = ivs.map(iv => `<span class="${iv ? "" : "r"}${have.has(iv) ? "" : " off"}" title="${have.has(iv) ? "" : "šiame variante praleista"}"><b>${noteName(r, t, iv)}</b><i>${labOf(t, iv)}</i></span>`).join("");
+    if (v && v.tag && S.view !== "full") desc += " · " + v.tag.toLowerCase();
+  }
+  $("cdesc").textContent = desc;
+}
+function diag(v) {
+  const W = 100, x = s => 19 + s * 14.6, top = 26, rh = 17;
+  const st = v.maxF <= 4 ? 1 : v.minF, rows = Math.max(5, v.maxF - st + 1), H = top + rows * rh + 6;
+  let o = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(nameOf(v))} ${tabStr(v.fr)}">`;
+  for (let f = 0; f <= rows; f++) o += `<line class="dg-fret" x1="${x(0)}" x2="${x(5)}" y1="${top + f * rh}" y2="${top + f * rh}"/>`;
+  for (let s = 0; s < 6; s++) o += `<line class="dg-str" x1="${x(s)}" x2="${x(s)}" y1="${top}" y2="${top + rows * rh}"/>`;
+  if (st === 1) o += `<line class="dg-nut" x1="${x(0) - 1}" x2="${x(5) + 1}" y1="${top - 1}" y2="${top - 1}"/>`;
+  else o += `<text class="dg-txt" x="${x(0) - 9}" y="${top + rh / 2 + 3}" text-anchor="end">${st}</text>`;
+  if (v.barre) { const y = top + (v.barre.f - st + .5) * rh; o += `<rect class="dg-bar" x="${x(v.barre.lo) - 6}" y="${y - 6}" width="${x(v.barre.hi) - x(v.barre.lo) + 12}" height="12" rx="6"/>`; }
+  for (let s = 0; s < 6; s++) {
+    const f = v.fr[s];
+    if (f == null) { o += `<text class="dg-x" x="${x(s)}" y="${top - 8}" text-anchor="middle">×</text>`; continue; }
+    const m = OPEN[s] + f, lab = labFor(m), r = lab === "R" ? " r" : "";
+    if (f === 0) { o += `<circle class="dg-o${r}" cx="${x(s)}" cy="${top - 11}" r="4"/>`; continue; }
+    const y = top + (f - st + .5) * rh;
+    o += `<circle class="dg-dot${r}" cx="${x(s)}" cy="${y}" r="6.6"/><text class="dg-lb${r}" x="${x(s)}" y="${y + 2.5}" text-anchor="middle">${esc(lab)}</text>`;
+  }
+  return o + "</svg>";
+}
+function renderGroups() {
+  const box = $("groups"); box.innerHTML = "";
+  if (!LIST.length) { box.innerHTML = `<p class="empty">Šiam akordui patogių variantų šioje grupėje nerasta. Pabandyk kitą skirtuką.</p>`; return; }
+  let i = 0;
+  for (const gr of GROUPS) {
+    const sec = document.createElement("section"); sec.className = "group";
+    sec.innerHTML = `<div class="ghead"><h3>${esc(gr.title)}</h3><small>${esc(gr.sub)}</small></div><div class="cards"></div>`;
+    const cards = sec.querySelector(".cards");
+    for (const v of gr.items) {
+      const b = document.createElement("button"); b.className = "vc"; b.dataset.i = i; b.id = "vc-" + i;
+      const sub = S.view === "full" || S.view === "inv" ? v.tag : (v.pos ? v.pos + " · " : "") + v.tag;
+      b.innerHTML = diag(v) + `<span class="vt">${esc(nameOf(v))}</span><span class="vs">${esc(sub)}</span><span class="tab">${tabStr(v.fr)}</span>`;
+      const idx = i;
+      b.onclick = () => { if (auto.on) toggleAuto(); select(idx, true); };
+      cards.appendChild(b); i++;
+    }
+    box.appendChild(sec);
+  }
+}
+function refresh(sound) {
+  if (auto.on) toggleAuto();
+  compute(); S.vi = 0;
+  renderRoots(); renderTypes(); renderViews(); renderGroups();
+  select(0, !!sound);
+  save();
+}
+
+/* rankenėlės */
+const knobs = [];
+function knob(box, d) {
+  const el = document.createElement("div");
+  el.className = "knob"; el.tabIndex = 0; el.setAttribute("role", "slider"); el.id = "k-" + d.key;
+  el.setAttribute("aria-label", d.name); el.setAttribute("aria-valuemin", d.min); el.setAttribute("aria-valuemax", d.max);
+  el.innerHTML = `<div class="dial"><svg viewBox="0 0 68 68" aria-hidden="true"><path class="trk" d=""/><path class="val" d=""/></svg></div><div class="name">${d.name}</div><div class="v"></div>`;
+  const R = 31, C = 34, a0 = -135, a1 = 135;
+  const pt = a => { const r = (a - 90) * Math.PI / 180; return [C + R * Math.cos(r), C + R * Math.sin(r)]; };
+  const arc = (from, to) => { const [x0, y0] = pt(from), [x1, y1] = pt(to); return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${to - from > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+  el.querySelector(".trk").setAttribute("d", arc(a0, a1));
+  const upd = () => {
+    const v = S[d.key], u = (v - d.min) / (d.max - d.min), ang = a0 + u * (a1 - a0);
+    el.querySelector(".dial").style.setProperty("--rot", ang + "deg");
+    el.querySelector(".val").setAttribute("d", u > .004 ? arc(a0, ang) : "");
+    el.querySelector(".v").textContent = d.fmt(v);
+    el.setAttribute("aria-valuenow", v); el.setAttribute("aria-valuetext", d.fmt(v));
+  };
+  const setV = v => { v = clamp(Math.round(v / d.step) * d.step, d.min, d.max); if (v === S[d.key]) return; S[d.key] = v; upd(); d.on(); save(); };
+  let y0 = 0, v0 = 0;
+  el.addEventListener("pointerdown", e => { el.setPointerCapture(e.pointerId); y0 = e.clientY; v0 = S[d.key]; el.focus(); e.preventDefault(); });
+  el.addEventListener("pointermove", e => { if (!el.hasPointerCapture(e.pointerId)) return; setV(v0 + (y0 - e.clientY) / 160 * (d.max - d.min) * (e.shiftKey ? .25 : 1)); });
+  el.addEventListener("dblclick", () => setV(DEF[d.key]));
+  el.addEventListener("wheel", e => { e.preventDefault(); setV(S[d.key] - Math.sign(e.deltaY) * d.step * 2); }, { passive: false });
+  el.addEventListener("keydown", e => {
+    const k = e.key, st = d.step * (e.shiftKey ? 5 : 1);
+    if (k === "ArrowUp" || k === "ArrowRight") setV(S[d.key] + st);
+    else if (k === "ArrowDown" || k === "ArrowLeft") setV(S[d.key] - st);
+    else if (k === "Home") setV(d.min); else if (k === "End") setV(d.max);
+    else return;
+    e.preventDefault(); e.stopPropagation();
+  });
+  box.appendChild(el); knobs.push(upd); upd();
+}
+const pickWord = h => h < .25 ? "pirštai" : h < .5 ? "minkštas" : h < .8 ? "vidutinis" : "kietas";
+const ageWord = a => a < .2 ? "naujos" : a < .55 ? "pagrotos" : a < .8 ? "senokos" : "senos";
+function buildKnobs() {
+  const P = () => applyParams(), O = () => applyOut(), h = $("knobs");
+  knob(h, { key: "vel", name: "Stiprumas", min: .15, max: 1, step: .01, fmt: v => Math.round(v * 100) + " %", on: () => {} });
+  knob(h, { key: "strum", name: "Greitis", min: 4, max: 60, step: 1, fmt: v => v + " ms", on: () => {} });
+  knob(h, { key: "hardness", name: "Plektras", min: 0, max: 1, step: .01, fmt: pickWord, on: P });
+  knob(h, { key: "pickPos", name: "Vieta", min: 0, max: 1, step: .01, fmt: v => Math.round(30 + 170 * v) + " mm", on: P });
+  knob(h, { key: "sustain", name: "Skambėjimas", min: .4, max: 1.8, step: .05, fmt: v => "×" + v.toFixed(2).replace(".", ","), on: P });
+  knob(h, { key: "age", name: "Stygos", min: 0, max: 1, step: .01, fmt: ageWord, on: P });
+  knob(h, { key: "tone", name: "Tonas", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 10) + "/10", on: P });
+  knob(h, { key: "room", name: "Erdvė", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + " %", on: O });
+  knob(h, { key: "vol", name: "Garsumas", min: 0, max: 1, step: .01, fmt: v => Math.round(v * 100) + " %", on: O });
+}
+
+/* ================================================================ grifas */
+const cv = $("board"), g2 = cv.getContext("2d"), sc = $("scope"), g3 = sc.getContext("2d");
+let W = 0, H = 0, dpr = 1, geo = null;
+const col = {};
+function readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ["screen", "screen-line", "screen-ink", "screen-dim", "accent", "accent-ink", "wood", "fret"]) col[k] = cs.getPropertyValue("--" + k).trim(); }
+function resize() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const c of [cv, sc]) { const r = c.getBoundingClientRect(); c.width = Math.round(r.width * dpr); c.height = Math.round(r.height * dpr); }
+  W = cv.width / dpr; H = cv.height / dpr;
+  const zoneW = W < 480 ? 56 : 84, nutW = 34;
+  const nF = clamp(Math.floor((W - zoneW - nutW - 8) / 42), 6, 15);
+  const top = 22, bot = 30, rowH = (H - top - bot) / 6;
+  geo = { zoneW, nutW, nF, top, bot, rowH, cell: (W - zoneW - nutW) / nF };
+}
+function viewStart() {
+  const v = cur(); if (!v || !geo) return 0;
+  if (v.maxF <= geo.nF) return 0;
+  return clamp(v.minF - 1, 0, 15 - geo.nF + 1);
+}
+const xFret = (f, f0) => geo.nutW + (f - f0) * geo.cell;
+const yStr = s => geo.top + (5 - s + .5) * geo.rowH;
+let scopeBuf = null, hover = null;
+function draw(now) {
+  if (!geo) return;
+  const g = g2; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const f0 = viewStart(); geo.f0 = f0;
+  g.fillStyle = col.screen; g.fillRect(0, 0, W, H);
+  const { nutW, nF, top, rowH, zoneW } = geo, bTop = top, bBot = top + rowH * 6, zoneX = W - zoneW;
+  g.fillStyle = col.wood; g.fillRect(nutW, bTop, zoneX - nutW, bBot - bTop);
+  g.fillStyle = col["screen-line"];
+  for (const f of [3, 5, 7, 9, 15]) if (f > f0 && f <= f0 + nF) { g.beginPath(); g.arc(xFret(f, f0) - geo.cell / 2, (bTop + bBot) / 2, 4, 0, 7); g.fill(); }
+  if (12 > f0 && 12 <= f0 + nF) for (const yy of [bTop + rowH * 1.5, bBot - rowH * 1.5]) { g.beginPath(); g.arc(xFret(12, f0) - geo.cell / 2, yy, 4, 0, 7); g.fill(); }
+  g.font = "500 10px " + getComputedStyle(document.body).getPropertyValue("--font-mono");
+  g.textAlign = "center"; g.textBaseline = "middle";
+  for (let f = f0 + 1; f <= f0 + nF; f++) {
+    const x = xFret(f, f0);
+    g.fillStyle = col.fret; g.globalAlpha = .55; g.fillRect(x - 1, bTop, 2, bBot - bTop); g.globalAlpha = 1;
+    g.fillStyle = col["screen-dim"]; g.fillText(f, x - geo.cell / 2, H - 14);
+  }
+  g.fillStyle = col["screen-ink"]; g.globalAlpha = f0 ? .3 : .8; g.fillRect(nutW - 3, bTop - 2, f0 ? 2 : 4, bBot - bTop + 4); g.globalAlpha = 1;
+  g.fillStyle = col["screen-dim"]; g.fillText(f0 ? "0 · " + (f0 + 1) + "→" : "0", nutW / 2 + (f0 ? 10 : 0), H - 14);
+  g.fillStyle = col["screen-line"]; g.globalAlpha = .25; g.fillRect(zoneX, bTop, zoneW, bBot - bTop); g.globalAlpha = 1;
+  g.strokeStyle = col["screen-line"]; g.lineWidth = 2;
+  g.beginPath(); g.arc(zoneX + zoneW * .55, (bTop + bBot) / 2, (bBot - bTop) * .42, 0, 7); g.stroke();
+  g.fillStyle = col["screen-dim"]; g.fillText("↕ brauk", zoneX + zoneW / 2, H - 14);
+  const v = cur(), fr = v ? v.fr : [null, null, null, null, null, null];
+  const r6 = Math.min(10, rowH * .38);
+  // visos akordo natos grife
+  if (S.ghost && v) {
+    const ok = new Set(midis(fr).map(m => m % 12));
+    if (S.view !== "power") for (const i of [...type().req, ...type().opt]) ok.add((root().pc + i) % 12);
+    g.font = "600 9px " + getComputedStyle(document.body).getPropertyValue("--font-mono");
+    for (let s = 0; s < 6; s++) for (let f = f0 + 1; f <= f0 + nF; f++) {
+      const m = OPEN[s] + f; if (!ok.has(m % 12) || fr[s] === f) continue;
+      const x = xFret(f, f0) - geo.cell / 2, y = yStr(s), isR = m % 12 === root().pc;
+      g.globalAlpha = .55; g.strokeStyle = isR ? col.accent : col["screen-dim"]; g.lineWidth = 1;
+      g.beginPath(); g.arc(x, y, r6 - 1, 0, 7); g.stroke();
+      g.fillStyle = isR ? col.accent : col["screen-dim"]; g.fillText(labFor(m), x, y + .5); g.globalAlpha = 1;
+    }
+  }
+  const t = now / 1000;
+  g.font = "500 10px " + getComputedStyle(document.body).getPropertyValue("--font-mono");
+  for (let s = 0; s < 6; s++) {
+    const y = yStr(s), f = fretOf[s], lv = Math.min(1, (levels[s] || 0) * 2.2);
+    const thick = 0.9 + (5 - s) * .32;
+    const x0 = f == null || f === 0 || f <= f0 ? nutW : xFret(Math.min(f, f0 + nF), f0) - geo.cell * .5;
+    g.strokeStyle = col.fret; g.globalAlpha = .55; g.lineWidth = thick;
+    g.beginPath(); g.moveTo(nutW, y); g.lineTo(x0, y); g.stroke();
+    const amp = lv * Math.min(6, rowH * .22), ph = t * (34 + s * 7);
+    g.globalAlpha = .55 + lv * .45; g.strokeStyle = lv > .02 ? col.accent : col.fret; g.lineWidth = thick;
+    g.beginPath();
+    for (let i = 0; i <= 40; i++) { const u = i / 40, x = x0 + (W - x0) * u; const yy = y + Math.sin(Math.PI * u) * Math.sin(ph) * amp; i ? g.lineTo(x, yy) : g.moveTo(x, yy); }
+    g.stroke(); g.globalAlpha = 1;
+    g.fillStyle = col["screen-dim"]; g.fillText(SNAME[s], 9, y);
+    // pasirinkto varianto žymės
+    const cf = fr[s];
+    if (cf == null) { g.fillStyle = col["screen-dim"]; g.fillText("×", nutW - 12, y); }
+    else {
+      const m = OPEN[s] + cf, lab = labFor(m), isR = lab === "R";
+      const recent = clamp(1 - (performance.now() - lastHit[s]) / 600, 0, 1);
+      if (cf === 0) {
+        g.strokeStyle = isR ? col.accent : col["screen-ink"]; g.lineWidth = 1.6; g.beginPath(); g.arc(nutW - 12, y, 6.5 + recent * 1.5, 0, 7); g.stroke();
+      } else if (cf > f0 && cf <= f0 + nF) {
+        const x = xFret(cf, f0) - geo.cell / 2;
+        g.fillStyle = isR ? col.accent : col["screen-ink"]; g.beginPath(); g.arc(x, y, r6 + recent * 2, 0, 7); g.fill();
+        g.fillStyle = isR ? col["accent-ink"] : col.screen; g.font = "600 10px " + getComputedStyle(document.body).getPropertyValue("--font-mono");
+        g.fillText(lab, x, y + .5); g.font = "500 10px " + getComputedStyle(document.body).getPropertyValue("--font-mono");
+      }
+    }
+  }
+  if (hover && hover.f != null) {
+    g.strokeStyle = col.accent; g.lineWidth = 1.5; g.globalAlpha = .7;
+    const x = hover.f === 0 ? nutW - 12 : xFret(hover.f, f0) - geo.cell / 2;
+    g.beginPath(); g.arc(x, yStr(hover.s), r6 + 2, 0, 7); g.stroke(); g.globalAlpha = 1;
+  }
+  const sw = sc.width / dpr, sh = sc.height / dpr;
+  g3.setTransform(dpr, 0, 0, dpr, 0, 0); g3.fillStyle = col.screen; g3.fillRect(0, 0, sw, sh);
+  if (G && G.an) {
+    const buf = scopeBuf || (scopeBuf = new Float32Array(G.an.fftSize)); G.an.getFloatTimeDomainData(buf);
+    let st = 0; for (let i = 1; i < buf.length / 2; i++) if (buf[i - 1] < 0 && buf[i] >= 0) { st = i; break; }
+    g3.strokeStyle = col.accent; g3.globalAlpha = .9; g3.lineWidth = 1.2; g3.beginPath();
+    const n = Math.min(1024, buf.length - st);
+    for (let i = 0; i < n; i++) { const x = i / (n - 1) * sw, y = sh / 2 - buf[st + i] * sh * .9; i ? g3.lineTo(x, y) : g3.moveTo(x, y); }
+    g3.stroke(); g3.globalAlpha = 1;
+  } else { g3.strokeStyle = col["screen-line"]; g3.beginPath(); g3.moveTo(0, sh / 2); g3.lineTo(sw, sh / 2); g3.stroke(); }
+}
+function loop(now) { draw(now); requestAnimationFrame(loop); }
+function hit(e) {
+  const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const row = Math.floor((y - geo.top) / geo.rowH), s = 5 - clamp(row, 0, 5), f0 = geo.f0 || 0;
+  if (x >= W - geo.zoneW) return { zone: true, s, y };
+  if (x < geo.nutW) return { s, f: 0 };
+  return { s, f: f0 + clamp(Math.floor((x - geo.nutW) / geo.cell) + 1, 1, geo.nF) };
+}
+let drag = null;
+cv.addEventListener("pointerdown", async e => {
+  if (!geo) return;
+  cv.setPointerCapture(e.pointerId); e.preventDefault();
+  const h = hit(e), v = cur();
+  await ensureAudio();
+  if (h.zone) {
+    drag = { zone: true, last: h.s, lastY: h.y };
+    const f = v && v.fr[h.s];
+    if (f != null) { play(h.s, f, ctx.currentTime + .008, S.vel); flash(); }
+  } else {
+    drag = { zone: false };
+    play(h.s, h.f, ctx.currentTime + .012, S.vel);
+    const m = OPEN[h.s] + h.f;
+    $("readout").innerHTML = `${nn(m)} · ${hz(m).toFixed(2).replace(".", ",")} Hz <em>· ${6 - h.s} styga · ${h.f === 0 ? "atvira" : h.f + " laukelis"}${v ? " · " + noteRole(m) : ""}</em>`;
+    flash();
+  }
+});
+function noteRole(m) {
+  const iv = ((m - root().pc) % 12 + 12) % 12;
+  const inChord = S.view === "power" ? midis(cur().fr).some(x => x % 12 === m % 12) : [...type().req, ...type().opt].includes(iv);
+  return inChord ? "akordo nata " + labFor(m) : "ne akordo nata";
+}
+cv.addEventListener("pointermove", e => {
+  if (!geo) return;
+  const h = hit(e);
+  hover = h.zone ? null : h;
+  if (!drag || !drag.zone || !ctx || !engine) return;
+  if (h.s !== drag.last) {
+    const fr = cur().fr, dirUp = h.y < drag.lastY;
+    const a = drag.last, b = h.s, stp = b > a ? 1 : -1;
+    let t = ctx.currentTime + .006;
+    for (let s = a + stp; stp > 0 ? s <= b : s >= b; s += stp) if (fr[s] != null) { play(s, fr[s], t, S.vel * (dirUp ? 1 : .85)); t += .003; }
+    drag.last = h.s; drag.lastY = h.y; flash();
+  }
+});
+const endDrag = () => { drag = null; };
+cv.addEventListener("pointerup", endDrag); cv.addEventListener("pointercancel", endDrag);
+cv.addEventListener("pointerleave", () => { hover = null; });
+
+/* ================================================================ prijungimas */
+$("down").onclick = () => strum("down");
+$("up").onclick = () => strum("up");
+$("arp").onclick = arpeggio;
+$("slow").onclick = oneByOne;
+$("all").onclick = () => { ensureAudio(); toggleAuto(); };
+$("prev").onclick = () => select(S.vi - 1, true);
+$("next").onclick = () => select(S.vi + 1, true);
+$("mute").onclick = muteAll;
+$("ghost").onclick = () => { S.ghost = !S.ghost; $("ghost").setAttribute("aria-pressed", S.ghost); save(); };
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const tg = e.target, onSlider = tg && tg.closest && tg.closest("[role=slider]"), onBtn = tg && tg.closest && tg.closest("button");
+  if (e.key === "Escape") { muteAll(); return; }
+  if (onSlider) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); select(S.vi + 1, true); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); select(S.vi - 1, true); }
+  else if (onBtn) return;
+  else if (e.key === " ") { e.preventDefault(); strum(e.shiftKey ? "up" : "down"); }
+  else if (e.key === "u" || e.key === "U") strum("up");
+  else if (e.key === "p" || e.key === "P") arpeggio();
+});
+document.addEventListener("visibilitychange", () => { if (document.hidden && auto.on) toggleAuto(); });
+const mq = matchMedia("(prefers-color-scheme: dark)");
+const themeRefresh = () => readColors();
+mq.addEventListener ? mq.addEventListener("change", themeRefresh) : mq.addListener(themeRefresh);
+new MutationObserver(themeRefresh).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+new ResizeObserver(() => resize()).observe(cv);
+
+buildKnobs();
+$("ghost").setAttribute("aria-pressed", S.ghost);
+refresh(false);
+$("readout").innerHTML = `<em>Spausk bet kurią diagramą, ↓ Žemyn arba brauk per stygas grifo dešinėje.</em>`;
+readColors(); resize();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
